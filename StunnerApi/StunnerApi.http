@@ -1,0 +1,6 @@
+@StunnerApi_HostAddress = http://localhost:5001
+
+GET {{StunnerApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
