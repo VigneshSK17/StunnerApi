@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication;
+using YouZack.FromJsonBody;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseFromJsonBody();
 
 app.UseHttpsRedirection();
 app.UseRouting();
