@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.EntityFrameworkCore;
 using YouZack.FromJsonBody;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// TODO: Set up different SQL Server
+builder.Services.AddDbContext<UserContext>(options =>
+    options.UseSqlite("Data Source=test.db"));
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 

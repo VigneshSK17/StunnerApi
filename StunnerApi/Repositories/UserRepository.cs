@@ -3,11 +3,11 @@ public class UserRepository : IUserRepository {
 
     private List<User> _users = [
         new User
-        ("peter", BC.EnhancedHashPassword("peter123", 17)),
+        {Username="peter", Password=BC.EnhancedHashPassword("peter123", 17)},
         new User
-        ("joydip", "joydip123"),
+        {Username="joydip", Password="joydip123"},
         new User
-        ("james", "james123")
+        {Username="james", Password="james123"}
     ];
 
     public async Task<bool> Authenticate(string username, string password) {
@@ -15,13 +15,14 @@ public class UserRepository : IUserRepository {
     }
 
     // TODO: Add some sort of exception return for if user already exists
+    // TODO: Hook up database to allow for actually adding user
     public async Task<bool> Create(string username, string password) {
         if (!await Authenticate(username, password)) {
             _users.Add(
-                new User(
-                    username,
-                    BC.EnhancedHashPassword(password, 17)
-                )
+                new User {
+                    Username = username,
+                    Password = BC.EnhancedHashPassword(password, 17)
+                }
             );
             return await Task.FromResult(true);
         } else {

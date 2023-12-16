@@ -1,6 +1,10 @@
-public class User(string _username, string _password)
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+public class User()
 {
-    public string Id { get; set; } = Guid.NewGuid().ToString();
-    public string Username { get; set; } = _username;
-    public string Password { get; set; } = _password;
+    // [DatabaseGenerated(DatabaseGeneratedOption.Identity), Key()]
+    public int Id { get; set; }
+    public required string Username { get; set; }
+    public required string Password { get; set; }
 }
