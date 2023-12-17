@@ -14,7 +14,7 @@ public class UserContext(DbContextOptions options) : DbContext(options) {
             entity.HasData(new User {
                 Id = 1,
                 Username = "vigsk17",
-                Password = "abc123",
+                Password = BC.EnhancedHashPassword("abc123", 17),
             });
         });
     }

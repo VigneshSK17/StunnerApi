@@ -12,13 +12,14 @@ public class UserController(IUserRepository _userRepository) : Controller {
 
     [HttpGet]
     [Authorize]
-    public async Task<List<string>> Get() {
-        return await _userRepository.GetUsernames();
+    public async Task<int> Login() {
+        int? userId = (int?)Request.HttpContext.Items["user_id"];
+        return await Task.FromResult(userId.GetValueOrDefault());
     }
 
     [HttpPost]
     public async Task<IActionResult> SignUp([FromJsonBody] string username, [FromJsonBody] string password) {
-        bool userCreated = await _userRepository.Create(username, password);
-        return await Task.FromResult<IActionResult>(!userCreated ? Conflict() : Ok($"user {username} created"));
+        User? userCreated = await _userRepository.CreateUser(username, password);
+        return await Task.FromResult<IActionResult>(userCreated == null ? Conflict() : Ok());
     }
 }

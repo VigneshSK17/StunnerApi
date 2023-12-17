@@ -23,11 +23,14 @@ public class BasicAuthHandler(
             var credentialsAsEncodedString = Encoding.UTF8.GetString(Convert.FromBase64String(token));
             var credentials = credentialsAsEncodedString.Split(':');
 
-            if (await _userRepository.Authenticate(credentials[0], credentials[1])) {
+            var authUser = await _userRepository.Authenticate(credentials[0], credentials[1]);
+            if (authUser != null) {
                 var claims = new[] { new Claim("name", credentials[0]), new Claim(ClaimTypes.Role, "Admin") };
                 var identity = new ClaimsIdentity(claims, "Basic");
                 var claimsPrincipal = new ClaimsPrincipal(identity);
-                return await Task.FromResult(AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, Scheme.Name)));
+                var result = AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, Scheme.Name));
+                Request.HttpContext.Items["user_id"] = authUser.Id;
+                return await Task.FromResult(result);
             }
 
         }

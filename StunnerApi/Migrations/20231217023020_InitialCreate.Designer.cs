@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace StunnerApi.Migrations
 {
     [DbContext(typeof(UserContext))]
-    [Migration("20231216234351_InitialCreate")]
+    [Migration("20231217023020_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -42,7 +42,7 @@ namespace StunnerApi.Migrations
                         new
                         {
                             Id = 1,
-                            Password = "abc123",
+                            Password = "$2a$17$8hC9hB9A01BWU4AJJRNqOuk43feNWl9uYPKgq3qboI6Z4CI.9PVIe",
                             Username = "vigsk17"
                         });
                 });

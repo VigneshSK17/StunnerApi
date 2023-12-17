@@ -27,7 +27,7 @@ namespace StunnerApi.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "Password", "Username" },
-                values: new object[] { 1, "abc123", "vigsk17" });
+                values: new object[] { 1, "$2a$17$8hC9hB9A01BWU4AJJRNqOuk43feNWl9uYPKgq3qboI6Z4CI.9PVIe", "vigsk17" });
         }
 
         /// <inheritdoc />

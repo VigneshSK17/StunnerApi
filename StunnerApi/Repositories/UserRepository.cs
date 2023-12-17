@@ -1,37 +1,44 @@
-
-public class UserRepository : IUserRepository {
+public class UserRepository(UserContext _context) : IUserRepository {
 
     private List<User> _users = [
         new User
-        {Username="peter", Password=BC.EnhancedHashPassword("peter123", 17)},
+        {Username="peter", Password="peter123"},
         new User
         {Username="joydip", Password="joydip123"},
         new User
         {Username="james", Password="james123"}
     ];
 
-    public async Task<bool> Authenticate(string username, string password) {
-        return await Task.FromResult(_users.SingleOrDefault(u => u.Username == username && BC.EnhancedVerify(password, u.Password)) != null);
+    public async Task<User?> Authenticate(string username, string password) {
+        List<User> users = _context.Users.Where(u => u.Username == username).ToList();
+        User? user = users.SingleOrDefault(u => BC.EnhancedVerify(password, u.Password));
+
+        return await Task.FromResult(user);
     }
 
     // TODO: Add some sort of exception return for if user already exists
-    // TODO: Hook up database to allow for actually adding user
-    public async Task<bool> Create(string username, string password) {
-        if (!await Authenticate(username, password)) {
-            _users.Add(
+    public async Task<User?> CreateUser(string username, string password) {
+        if (await Authenticate(username, password) == null) {
+            _context.Users.Add(
                 new User {
                     Username = username,
                     Password = BC.EnhancedHashPassword(password, 17)
                 }
             );
-            return await Task.FromResult(true);
+            await _context.SaveChangesAsync();
+            return await Task.FromResult(_users.Last());
         } else {
-            return await Task.FromResult(false);
+            return await Task.FromResult<User?>(null);
         }
     }
 
+    public async Task<User?> GetUserByID(int userId) {
+        User? user = _context.Users.FirstOrDefault(u => u.Id == userId);
+        return await Task.FromResult(user);
+    }
+
     public async Task<List<string>> GetUsernames() {
-        List<string> usernames = _users.Select(user => user.Username).ToList();
+        List<string> usernames = _context.Users.Select(user => user.Username).ToList();
         return await Task.FromResult(usernames);
     }
 }
