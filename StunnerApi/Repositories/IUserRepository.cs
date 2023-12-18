@@ -4,6 +4,6 @@ public interface IUserRepository {
     Task<User?> GetUserByID(int userId);
 
     Task<User?> CreateUser(string username, string password);
-    // Task<bool> DeleteUser(int userId);
+    Task<bool> DeleteUser(int userId);
     // Task<bool> UpdateUser(int userId, string newUsername, string newPassword);
 }

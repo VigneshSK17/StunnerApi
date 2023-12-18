@@ -10,6 +10,12 @@ namespace StunnerApi.Controllers;
 [Route("/api/[controller]")]
 public class UserController(IUserRepository _userRepository) : Controller {
 
+    [HttpPost]
+    public async Task<IActionResult> SignUp([FromJsonBody] string username, [FromJsonBody] string password) {
+        User? userCreated = await _userRepository.CreateUser(username, password);
+        return await Task.FromResult<IActionResult>(userCreated == null ? Conflict() : Ok());
+    }
+
     [HttpGet]
     [Authorize]
     public async Task<int> Login() {
@@ -17,9 +23,11 @@ public class UserController(IUserRepository _userRepository) : Controller {
         return await Task.FromResult(userId.GetValueOrDefault());
     }
 
-    [HttpPost]
-    public async Task<IActionResult> SignUp([FromJsonBody] string username, [FromJsonBody] string password) {
-        User? userCreated = await _userRepository.CreateUser(username, password);
-        return await Task.FromResult<IActionResult>(userCreated == null ? Conflict() : Ok());
+    [HttpDelete]
+    [Authorize]
+    public async Task<IActionResult> Remove() {
+        int? userId = (int?)Request.HttpContext.Items["user_id"];
+        bool isDeleted = await _userRepository.DeleteUser(userId.GetValueOrDefault());
+        return await Task.FromResult<IActionResult>(isDeleted ? NoContent() : Conflict());
     }
 }

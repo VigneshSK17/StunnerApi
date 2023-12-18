@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Logging.Abstractions;
+
 public class UserRepository(UserContext _context) : IUserRepository {
 
     private List<User> _users = [
@@ -40,5 +42,16 @@ public class UserRepository(UserContext _context) : IUserRepository {
     public async Task<List<string>> GetUsernames() {
         List<string> usernames = _context.Users.Select(user => user.Username).ToList();
         return await Task.FromResult(usernames);
+    }
+
+    public async Task<bool> DeleteUser(int userId) {
+        User? user = await GetUserByID(userId);
+        if (user != null) {
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+            return true;
+        } else {
+            return false;
+        }
     }
 }
