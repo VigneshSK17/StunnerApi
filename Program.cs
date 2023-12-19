@@ -5,7 +5,7 @@ using YouZack.FromJsonBody;
 var builder = WebApplication.CreateBuilder(args);
 
 // TODO: Set up different SQL Server
-builder.Services.AddDbContext<UserContext>(options =>
+builder.Services.AddDbContext<DatabaseContext>(options =>
     options.UseSqlite("Data Source=test.db"));
 
 builder.Services.AddEndpointsApiExplorer();

@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Logging.Abstractions;
 
-public class UserRepository(UserContext _context) : IUserRepository {
+public class UserRepository(DatabaseContext _context) : IUserRepository {
 
     private List<User> _users = [
         new User
