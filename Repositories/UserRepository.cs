@@ -1,5 +1,3 @@
-using Microsoft.Extensions.Logging.Abstractions;
-
 public class UserRepository(DatabaseContext _context) : IUserRepository {
 
     private List<User> _users = [
@@ -54,4 +52,50 @@ public class UserRepository(DatabaseContext _context) : IUserRepository {
             return false;
         }
     }
+
+    public async Task<List<ActivityJson>> GetActivities(int userId) {
+        List<ActivityJson> activities = [.. _context.Activities
+            .Where(a => userId == a.UserId)
+            .Select(a => new ActivityJson(a))];
+        return await Task.FromResult(activities);
+    }
+
+    public async Task<int?> CreateActivity(
+        int userId,
+        string title,
+        string dateCreated,
+        ActivityType activityType = ActivityType.OTHER,
+        string? subject = null
+        ) {
+
+        User? user = _context.Users.FirstOrDefault(u => u.Id == userId);
+        if (user == null) {
+            return null;
+        }
+
+        if (!DateTimeOffset.TryParse(dateCreated, out DateTimeOffset offset))
+        {
+            offset = DateTimeOffset.UtcNow;
+        }
+
+
+        _context.Activities.Add(new Activity{
+            Title = title,
+            ActivityType = activityType,
+            Subject = subject,
+            DateCreated = offset,
+            User = user
+        });
+        await _context.SaveChangesAsync();
+
+        Activity newActivity = _context.Activities.First(a => offset == a.DateCreated);
+        user.Activities.Add(newActivity);
+        await _context.SaveChangesAsync();
+
+
+        return await Task.FromResult<int?>(newActivity.Id);
+    }
+
+
+
 }

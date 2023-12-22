@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Validations.Rules;
+using SQLitePCL;
 using YouZack.FromJsonBody;
 
 namespace StunnerApi.Controllers;
@@ -30,4 +31,35 @@ public class UserController(IUserRepository _userRepository) : Controller {
         bool isDeleted = await _userRepository.DeleteUser(userId.GetValueOrDefault());
         return await Task.FromResult<IActionResult>(isDeleted ? NoContent() : Conflict());
     }
+
+
+    // Activities
+
+    [HttpGet("Activities")]
+    [Authorize]
+    public async Task<List<ActivityJson>> GetUserActivites() {
+        int? userId = (int?)Request.HttpContext.Items["user_id"];
+        List<ActivityJson> activities = await _userRepository.GetActivities(userId.GetValueOrDefault());
+        return await Task.FromResult(activities);
+    }
+
+    [HttpPost("Activities")]
+    [Authorize]
+    public async Task<IActionResult> CreateUserActivity(
+        [FromJsonBody] string title,
+        [FromJsonBody] int activityType,
+        [FromJsonBody] string dateCreated = "",
+        [FromJsonBody] string? subject = null
+    ) {
+
+        int? userId = (int?)Request.HttpContext.Items["user_id"];
+
+        int? activityId = Enum.IsDefined(typeof(ActivityType), activityType) ?
+            await _userRepository.CreateActivity(userId.GetValueOrDefault(), title, dateCreated, (ActivityType) activityType, subject) :
+            await _userRepository.CreateActivity(userId.GetValueOrDefault(), title, dateCreated, subject: subject);
+
+        return await Task.FromResult<IActionResult>(activityId == null ? Conflict(): Ok(activityId));
+
+    }
+
 }
