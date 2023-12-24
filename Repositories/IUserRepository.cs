@@ -15,4 +15,12 @@ public interface IUserRepository {
         string dateCreated,
         ActivityType activityType = ActivityType.OTHER,
         string? subject = null);
+    Task<bool> DeleteActivity(int userId);
+    Task<bool> UpdateActivity(
+        int activityId,
+        string title,
+        string dateUpdated,
+        ActivityType activityType = ActivityType.OTHER,
+        string? subject = null
+    );
 }

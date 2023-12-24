@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Validations.Rules;
-using SQLitePCL;
 using YouZack.FromJsonBody;
 
 namespace StunnerApi.Controllers;
@@ -62,4 +61,26 @@ public class UserController(IUserRepository _userRepository) : Controller {
 
     }
 
+    [HttpDelete("Activities/{id:int}")]
+    [Authorize]
+    public async Task<IActionResult> RemoveActivity(int id) {
+        bool isDeleted = await _userRepository.DeleteActivity(id);
+        return await Task.FromResult<IActionResult>(isDeleted ? NoContent() : Conflict());
+    }
+
+    [HttpPut("Activities")]
+    [Authorize]
+    public async Task<IActionResult> UpdateActivity(
+        [FromJsonBody] int id,
+        [FromJsonBody] string title,
+        [FromJsonBody] int activityType,
+        [FromJsonBody] string dateUpdated = "",
+        [FromJsonBody] string? subject = null
+    ) {
+        bool isUpdated = Enum.IsDefined(typeof(ActivityType), activityType) ?
+            await _userRepository.UpdateActivity(id, title, dateUpdated, (ActivityType) activityType, subject) :
+            await _userRepository.UpdateActivity(id, title, dateUpdated, subject: subject);
+
+        return await Task.FromResult<IActionResult>(isUpdated ? Ok() : Conflict());
+    }
 }

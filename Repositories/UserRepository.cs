@@ -96,6 +96,41 @@ public class UserRepository(DatabaseContext _context) : IUserRepository {
         return await Task.FromResult<int?>(newActivity.Id);
     }
 
+    public async Task<bool> DeleteActivity(int activityId) {
+        Activity? activity = _context.Activities.FirstOrDefault(a => activityId == a.Id);
+        if (activity != null) {
+            _context.Activities.Remove(activity);
+            await _context.SaveChangesAsync();
+            return await Task.FromResult(true);
+        } else {
+            return await Task.FromResult(false);
+        }
+    }
 
+    public async Task<bool> UpdateActivity(
+        int activityId,
+        string title,
+        string dateUpdated,
+        ActivityType activityType = ActivityType.OTHER,
+        string? subject = null
+    ) {
+        Activity? activity = _context.Activities.FirstOrDefault(a => activityId == a.Id);
+        if (activity == null) {
+            return await Task.FromResult(false);
+        }
+
+        if (!DateTimeOffset.TryParse(dateUpdated, out DateTimeOffset offset)) {
+            offset = DateTimeOffset.UtcNow;
+        }
+
+        activity.Title = title;
+        activity.DateUpdated = offset;
+        activity.ActivityType = activityType;
+        activity.Subject = subject;
+        await _context.SaveChangesAsync();
+
+        return await Task.FromResult(true);
+
+    }
 
 }
